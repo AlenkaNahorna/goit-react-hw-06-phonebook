@@ -23,15 +23,15 @@ const contactsSlice = createSlice({
   },
 });
 
+export const { addItem, deleteItem, filterItems } = contactsSlice.actions;
+
 const persistConfig = {
   key: 'contacts',
   storage,
-  whitelist: ['contacts'],
+  whitelist: ['items'],
 };
 
 export const contactsReducer = persistReducer(
   persistConfig,
   contactsSlice.reducer
 );
-
-export const { addItem, deleteItem, filterItems } = contactsSlice.actions;

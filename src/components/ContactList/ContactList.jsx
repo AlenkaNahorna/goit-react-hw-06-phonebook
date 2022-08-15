@@ -1,4 +1,6 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteItem } from '../../redux/contactsSlice';
+import { getContact, getFilterWord } from '../../redux/selectors';
 import {
   ContactsList,
   ContactsListItem,
@@ -6,22 +8,36 @@ import {
 } from './ContactList.styled';
 import { SecondaryButton } from 'components/ui/buttons/SecondaryButton';
 
-export const ContactList = ({ contacts, onDeleteContact }) => {
+export const ContactList = () => {
+  const dispatch = useDispatch();
+
+  const items = useSelector(getContact);
+  const filter = useSelector(getFilterWord);
+
+  const normalizedValue = filter.toLowerCase();
+  const filteredContacts = items.filter(option =>
+    option.name.toLowerCase().includes(normalizedValue)
+  );
+
+  const deleteContact = contactId => {
+    dispatch(deleteItem(contactId));
+  };
+
   return (
     <ContactsList>
-      {contacts.map(({ id, name, number }) => (
+      {filteredContacts.map(({ id, name, number }) => (
         <ContactsListItem key={id}>
           {name}: <ContactsListText>{number}</ContactsListText>
-          <SecondaryButton onClick={() => onDeleteContact(id)}>
+          <SecondaryButton
+            type="button"
+            onClick={() => {
+              deleteContact(id);
+            }}
+          >
             Delate
           </SecondaryButton>
         </ContactsListItem>
       ))}
     </ContactsList>
   );
-};
-
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  onDeleteContact: PropTypes.func,
 };

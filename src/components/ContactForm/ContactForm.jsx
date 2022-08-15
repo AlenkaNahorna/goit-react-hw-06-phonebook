@@ -1,11 +1,11 @@
 import * as yup from 'yup';
 import { nanoid } from 'nanoid';
 import { Formik, ErrorMessage } from 'formik';
-import {
-  ErrorText,
-  FormEl,
-  Input,
-} from 'components/ContactForm/ContactForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { addItem } from '../../redux/contactsSlice';
+import { getContact } from '../../redux/selectors';
+import { ErrorText, FormEl, Input } from './ContactForm.styled';
 import { Label } from 'components/ui/Label/Label';
 import { PrimaryButton } from 'components/ui/buttons/PrimaryButton';
 
@@ -28,14 +28,26 @@ const FormError = ({ name }) => {
   );
 };
 
-export function ContactForm({ onSubmit }) {
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const items = useSelector(getContact);
+
   const handleSubmit = (values, { resetForm }) => {
     const newContact = {
       id: nanoid(6),
       name: values.name,
       number: values.number,
     };
-    onSubmit(newContact);
+    if (
+      items.find(item =>
+        item.name.toLowerCase().includes(newContact.name.toLowerCase())
+      )
+    ) {
+      toast.info(`${newContact.name} is already in contact`);
+      return;
+    } else {
+      dispatch(addItem(newContact));
+    }
     resetForm();
   };
 
@@ -47,12 +59,12 @@ export function ContactForm({ onSubmit }) {
     >
       <FormEl>
         <Label>
-          Name
+          Name:
           <Input type="text" name="name" />
           <FormError name="name" />
         </Label>
         <Label>
-          Number
+          Number:
           <Input type="tel" name="number" />
           <FormError name="number" />
         </Label>
@@ -61,4 +73,4 @@ export function ContactForm({ onSubmit }) {
       </FormEl>
     </Formik>
   );
-}
+};
