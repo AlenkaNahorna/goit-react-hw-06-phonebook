@@ -25,6 +25,9 @@ const contactsSlice = createSlice({
 
 export const { addItem, deleteItem, filterItems } = contactsSlice.actions;
 
+export const getContact = state => state.contacts.items;
+export const getFilterWord = state => state.contacts.filter;
+
 const persistConfig = {
   key: 'contacts',
   storage,
